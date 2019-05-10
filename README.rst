@@ -56,7 +56,7 @@ Create config file call config.yaml and add the following settings::
 Use
 ==========
 
-.. code-block:: python
+.. code-block:: bash
 
     $ sudo -u bermuda -H -s
     $ source /etc/bermuda/bermuda/bin/activate && python3 /etc/bermuda/bermuda.py
