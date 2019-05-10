@@ -6,6 +6,7 @@ import bermuda.const as berm_const
 
 
 def get_test_config():
+    """Return a test config settings."""
     return {
         berm_const.CONF_HOME_LATITUDE: 22,
         berm_const.CONF_HOME_LONGITUDE: -11,
@@ -18,6 +19,7 @@ def get_test_config():
 
 
 def test_publish_growing_days():
+    """Test the publish growing days."""
     PATCH_FORECAST = 'bermuda.app.forecastio'
     PATCH_MQTT = 'bermuda.app.mqtt'
     with patch(PATCH_FORECAST) \

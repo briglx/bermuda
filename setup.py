@@ -8,6 +8,7 @@ import bermuda.const as berm_const
 
 def read(fname):
     """Read README.rst into long_description.
+    
     ``long_description`` is what ends up on the PyPI front page.
     """
     with open(os.path.join(os.path.dirname(__file__), fname)) as f:
