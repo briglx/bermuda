@@ -3,7 +3,7 @@ Bermuda Growing Days
 **********************************
 The ``bermuda`` script is a support application that will fetch the number of days that are warm enough for bermuda to grow. 
 
-- Development: https://github.com/lamoreauxlab/home-assistant-bermuda/
+- Development: https://github.com/briglx/bermuda
 
 Bermuda will actively grown when nighttime temperatures are above 60°F.
 
