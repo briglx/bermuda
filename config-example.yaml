@@ -1,0 +1,9 @@
+home_latitude: 38.500000	
+home_longitude: -98.000000
+
+dark_sky_api_key: 0123456789abcdef9876543210fedcba
+
+mqtt_broker_address: 192.0.2.0
+mqtt_broker_username: admin
+mqtt_broker_password: admin1234
+mqtt_broker_port: 19750
