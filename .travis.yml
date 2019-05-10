@@ -11,4 +11,4 @@ install:
   - pip install -r requirements.txt
   - pip install .
 
-script: python -m pytest test/
+script: python -m pytest --cov=bermuda test/ && coveralls
