@@ -45,17 +45,19 @@ Create path and environment::
     source /etc/bermuda/env/bin/activate
     python3 -m pip install -r requirements.txt
 
-Create config file call config.yaml and add the following settings::
+Create config file call config.yaml and edit the settings::
 
-    home_latitude: your_home_latitude
-    home_longitude: your_home_longitude
-    dark_sky_api_key: your_dark_sky_api_key
-    mqtt_broker_address: your_mqtt_broker_address
-    mqtt_broker_username: your_mqtt_broker_username
-    mqtt_broker_password: your_mqtt_broker_password
-    mqtt_broker_port: your_mqtt_broker_port
+    $ cp config-example.yaml config.yaml
 
+Config Settings:
 
+- home_latitude: Latitude coordinate to monitor weather.
+- home_longitude: Longitude coordinate to monitor weather
+- dark_sky_api_key: Your API key for Dark Sky.
+- mqtt_brocker_address: The IP address or hostname of your MQTT broker example 192.0.2.0.
+- mqtt_broker_username: The username to use with your MQTT broker.
+- mqtt_broker_password: The corresponding password for the username to use with your MQTT broker.
+- mqtt_broker_port: The network port to connect to.
 
 .. _DarkSky: https://darksky.net/dev/docs
 
