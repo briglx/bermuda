@@ -75,5 +75,4 @@ def publish_growing_days(conf):
 
 
 if __name__ == "__main__":
-    print("starting bermuda")
     publish_growing_days(get_config())
