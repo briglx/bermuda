@@ -25,27 +25,20 @@ It then publishes a message to a MQTT broker in the format:
         "forcastDaysAbove60Deg":7
     }
 
+.. _DarkSky: https://darksky.net/dev/docs
 
 Installing
 ==========
 
-Create System user::
+Get Code::
 
-    useradd  --system  bermuda
-    sudo usermod -a -G bermuda bermuda
+    $ git clone https://github.com/briglx/bermuda.git
+    $ python3 -m venv bermuda
+    $ cd bermuda/
+    $ source bin/activate
+    $ python3 -m pip install .
 
-    su -s /bin/bash bermuda
-
-Create path and environment::
-
-    mkdir /etc/bermuda
-    cd /etc/bermuda
-    git clone git@github.com:user/project.git .
-    python3 -m venv env
-    source /etc/bermuda/env/bin/activate
-    python3 -m pip install -r requirements.txt
-
-Create config file call config.yaml and edit the settings::
+Edit Configuration::
 
     $ cp config-example.yaml config.yaml
 
@@ -59,7 +52,36 @@ Config Settings:
 - mqtt_broker_password: The corresponding password for the username to use with your MQTT broker.
 - mqtt_broker_port: The network port to connect to.
 
-.. _DarkSky: https://darksky.net/dev/docs
+Run Bermuda manually::
+
+    $ berm 
+
+Create a system user
+====================
+
+Create System user and group::
+
+    useradd  --system  bermuda
+    sudo usermod -a -G bermuda bermuda
+
+
+Autostart with Systemd
+======================
+
+Create a file is /etc/systemd/system/bermuda@YOUR_USER.service with YOUR_USER replaced by the user account that Bermuda will run as (normally bermuda).
+The following template should work::
+
+    [Unit]
+    Description=Bermuda
+    After=network-online.target
+
+    [Service]
+    Type=simple
+    User=%i
+    ExecStart=/srv/bermuda/bin/berm
+
+    [Install]
+    WantedBy=multi-user.target
 
 Use
 ==========

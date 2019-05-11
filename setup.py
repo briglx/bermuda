@@ -8,7 +8,7 @@ import bermuda.const as berm_const
 
 def read(fname):
     """Read README.rst into long_description.
-    
+
     ``long_description`` is what ends up on the PyPI front page.
     """
     with open(os.path.join(os.path.dirname(__file__), fname)) as f:
@@ -47,4 +47,9 @@ setup(
         "Publish the number of days that are warm enough for bermuda to grow"),
     long_description=read('README.rst'),
     license=PROJECT_LICENSE,
+    entry_points={
+        'console_scripts': [
+            'berm = bermuda.app:main'
+        ]
+    },
 )
