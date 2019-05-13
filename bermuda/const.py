@@ -18,6 +18,9 @@ CONF_HOME_LATITUDE = 'home_latitude'
 CONF_HOME_LONGITUDE = 'home_longitude'
 CONF_DARKSKY_API_KEY = 'dark_sky_api_key'
 
+ERR_TIMEOUT = "Fatal Error: Connection timeout for MQTT server {}."
+ERR_CONFIG = "Fatal Error: Specified configuration files does not exist {}."
+
 LOW_TEMP = 60
 
 MQTT_TOPIC = "monitor/blueleft/forecast/bermuda/growing"
