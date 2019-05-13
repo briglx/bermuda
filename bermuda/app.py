@@ -7,6 +7,15 @@ import paho.mqtt.client as mqtt
 import yaml
 from bermuda import const as berm_const
 import sys
+import os
+
+
+def ensure_config_path():
+    """Check if config file exists"""
+    if not os.path.isfile(berm_const.CONFIG_PATH):
+        print(('Fatal Error: Specified configuration files does '
+                'not exist {} ').format(berm_const.CONFIG_PATH))
+        sys.exit(1)
 
 
 def get_config():
@@ -78,6 +87,7 @@ def publish_growing_days(conf):
 def main():
     """Start Bermuda script."""
     print("Starting bermuda")
+    ensure_config_path()
     config = get_config()
     msg = publish_growing_days(config)
     print(msg)
