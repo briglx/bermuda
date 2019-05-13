@@ -25,6 +25,7 @@ PROJECT_COPYRIGHT = ' 2019-{}, {}'.format(dt.now().year, PROJECT_AUTHOR)
 PROJECT_URL = 'https://github.com/briglx/bermuda'
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
+PACKAGES = ['bermuda']
 
 REQUIRES = [
     'paho-mqtt>=1.4.0',

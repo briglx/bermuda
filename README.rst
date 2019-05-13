@@ -35,8 +35,7 @@ Get Code::
     $ git clone https://github.com/briglx/bermuda.git
     $ cd bermuda/
     $ python3 -m venv env
-    $ cd bermuda/
-    $ source bin/activate
+    $ source env/bin/activate
     $ python3 -m pip install .
 
 Edit Configuration::
