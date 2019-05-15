@@ -28,10 +28,10 @@ def get_test_config():
 
 def test_publish_growing_days():
     """Test the publish growing days."""
-    PATCH_FORECAST = 'bermuda.app.forecastio'
-    PATCH_MQTT = 'bermuda.app.mqtt'
-    with patch(PATCH_FORECAST) \
-            as mock_forecastio, patch(PATCH_MQTT) \
+    patch_forecast = 'bermuda.app.forecastio'
+    patch_mqtt = 'bermuda.app.mqtt'
+    with patch(patch_forecast) \
+            as mock_forecastio, patch(patch_mqtt) \
             as mock_mqtt:
 
         # Get call
@@ -54,7 +54,7 @@ def test_publish_growing_days():
 
         # Test Message
         test_msg = berm_const.MSG_TEMPLATE.format(0, 0, 0)
-        assert(msg == test_msg)
+        assert msg == test_msg
 
 
 def mock_load_forecast():
@@ -62,14 +62,17 @@ def mock_load_forecast():
     return {'daily'}
 
 
+# pylint: disable=R0903
 class MockForecastData():
     """Mock Forecast Data object."""
 
     def __init__(self):
         """Init for mock."""
+        # pylint: disable=C0103
         self.apparentTemperatureLow = 80
 
 
+# pylint: disable=R0903
 class MockForecastDaily():
     """MOck Forecast Daily object."""
 
@@ -78,14 +81,17 @@ class MockForecastDaily():
         self.data = [MockForecastData()]
 
 
+# pylint: disable=R0903
 class MockForecast():
     """Mock Forecast object."""
 
-    def daily(self):
+    @classmethod
+    def daily(cls):
         """Return mock daily forecast."""
         return MockForecastDaily()
 
 
+# pylint: disable=R0903
 class MockArgs():
     """Mock args object."""
 
@@ -96,15 +102,15 @@ class MockArgs():
 
 def test_publish_growing_days_data():
     """Test the publish growing days with data."""
-    PATCH_FORECAST = 'bermuda.app.forecastio'
-    PATCH_MQTT = 'bermuda.app.mqtt'
-    with patch(PATCH_FORECAST) \
-            as mock_forecastio, patch(PATCH_MQTT) \
+    patch_forecast = 'bermuda.app.forecastio'
+    patch_mqtt = 'bermuda.app.mqtt'
+    with patch(patch_forecast) \
+            as mock_forecastio, patch(patch_mqtt) \
             as mock_mqtt:
 
         # Override the forecastio.load_forecast method
-        mf = MockForecast()
-        mock_forecastio.load_forecast.return_value = mf
+        mock_forcast = MockForecast()
+        mock_forecastio.load_forecast.return_value = mock_forcast
 
         # Get call
         config = get_test_config()
@@ -126,7 +132,7 @@ def test_publish_growing_days_data():
 
         # Test Message
         test_msg = berm_const.MSG_TEMPLATE.format(2, 1, 1)
-        assert(msg == test_msg)
+        assert msg == test_msg
 
 
 def test_mqtt_connection_timeout():
@@ -135,7 +141,7 @@ def test_mqtt_connection_timeout():
         config = get_test_config()
         publish_growing_days(config)
 
-        assert(ex.value_code == 1)
+        assert ex.value_code == 1
 
 
 def test_arguments():
@@ -189,15 +195,15 @@ def test_get_config():
 
 def test_main():
     """Test Main method."""
-    PATH_ARGS = 'bermuda.app.get_arguments'
-    PATCH_PATH = 'bermuda.app.ensure_config_path'
-    PATCH_CONFIG = 'bermuda.app.get_config'
-    PATCH_DAYS = 'bermuda.app.publish_growing_days'
+    path_args = 'bermuda.app.get_arguments'
+    patch_path = 'bermuda.app.ensure_config_path'
+    patch_config = 'bermuda.app.get_config'
+    patch_days = 'bermuda.app.publish_growing_days'
 
-    with patch(PATH_ARGS) as mock_args, \
-        patch(PATCH_PATH) as mock_path, \
-        patch(PATCH_CONFIG) as mock_config, \
-            patch(PATCH_DAYS) as mock_days:
+    with patch(path_args) as mock_args, \
+        patch(patch_path) as mock_path, \
+        patch(patch_config) as mock_config, \
+            patch(patch_days) as mock_days:
 
         mock_args.return_value = MockArgs()
         mock_path.return_value = 'testpath'

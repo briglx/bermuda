@@ -1,11 +1,3 @@
 python-forecastio>=1.4.0
 paho-mqtt>=1.4.0
 PyYAML>=5.1
-
-# Dev Requirements
-numpydoc
-pytest
-pytest-cov
-flake8
-pydocstyle
-coveralls

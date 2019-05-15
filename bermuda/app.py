@@ -3,12 +3,12 @@
 
 import argparse
 from datetime import datetime, timedelta
+import sys
+import os
 import forecastio
 import paho.mqtt.client as mqtt
 import yaml
 from bermuda import const as berm_const
-import sys
-import os
 
 
 def get_arguments(args):
@@ -112,8 +112,9 @@ def publish_growing_days(conf):
         return msg
 
     except TimeoutError:
-        print((berm_const.ERR_TIMEOUT).format(
-            berm_const.CONF_MQTT_BROKER_ADDRESS)
+        print(
+            (berm_const.ERR_TIMEOUT).format(
+                berm_const.CONF_MQTT_BROKER_ADDRESS)
             )
         sys.exit(1)
 
