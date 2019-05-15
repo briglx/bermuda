@@ -3,7 +3,7 @@ Bermuda Growing Days
 **********************************
 .. image:: https://travis-ci.org/briglx/bermuda.svg?branch=master
     :target: https://travis-ci.org/briglx/bermuda
-.. image:: https://coveralls.io/repos/github/briglx/bermuda/badge.svg?branch=master
+.. image:: https://coveralls.io/repos/github/briglx/bermuda/basdge.svg?branch=master
     :target: https://coveralls.io/github/briglx/bermuda?branch=mastesr
 
 
