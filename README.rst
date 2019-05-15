@@ -3,9 +3,13 @@ Bermuda Growing Days
 **********************************
 .. image:: https://travis-ci.org/briglx/bermuda.svg?branch=master
     :target: https://travis-ci.org/briglx/bermuda
+    :alt: Build Status
 .. image:: https://coveralls.io/repos/github/briglx/bermuda/badge.svg?branch=master
     :target: https://coveralls.io/github/briglx/bermuda?branch=master
-
+    :alt: Code Coverage Status
+.. image:: https://requires.io/github/briglx/bermuda/requirements.svg?branch=master
+     :target: https://requires.io/github/briglx/bermuda/requirements/?branch=master
+     :alt: Requirements Status
 
 The ``bermuda`` script is a support application that will fetch the number of days that are warm enough for bermuda to grow. 
 
