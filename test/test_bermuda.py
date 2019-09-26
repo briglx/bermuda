@@ -3,7 +3,9 @@ import os
 from unittest.mock import patch
 import pytest
 from bermuda.app import (
+    get_ideal_overseeding_days,
     publish_growing_days,
+    publish_overseeding_days,
     get_arguments,
     ensure_config_path,
     get_config,
@@ -39,19 +41,8 @@ def test_publish_growing_days():
         # Test mocks
         mock_mqtt.Client.assert_called_with()
 
-        # Cache bypassed this call
-        # cur_time = datetime.utcnow()
-        # cur_time = cur_time.replace(minute=0, second=0, microsecond=0)
-        # last_week = cur_time - timedelta(days=7)
-
-        # mock_forecastio.load_forecast.assert_called_with(
-        #     config[berm_const.CONF_DARKSKY_API_KEY],
-        #     config[berm_const.CONF_HOME_LATITUDE],
-        #     config[berm_const.CONF_HOME_LONGITUDE]
-        # )
-
         # Test Message
-        test_msg = berm_const.MSG_TEMPLATE.format(0, 0, 0)
+        test_msg = berm_const.MSG_GROWING_TEMPLATE.format(0, 0, 0)
         assert msg == test_msg
 
 
@@ -61,32 +52,63 @@ def mock_load_forecast():
 
 
 # pylint: disable=R0903
-class MockForecastData():
+class MockGrowingForecastData():
     """Mock Forecast Data object."""
 
     def __init__(self):
         """Init for mock."""
         # pylint: disable=C0103
+        self.apparentTemperatureHigh = 95
         self.apparentTemperatureLow = 80
 
 
 # pylint: disable=R0903
-class MockForecastDaily():
+class MockOverseedingForecastData():
+    """Mock Forecast Data object."""
+
+    def __init__(self):
+        """Init for mock."""
+        # pylint: disable=C0103
+        self.apparentTemperatureHigh = 80
+        self.apparentTemperatureLow = 55
+
+
+# pylint: disable=R0903
+class MockGrowingForecastDaily():
     """MOck Forecast Daily object."""
 
     def __init__(self):
         """Init for mock."""
-        self.data = [MockForecastData()]
+        self.data = [MockGrowingForecastData()]
 
 
 # pylint: disable=R0903
-class MockForecast():
+class MockOverseedingForecastDaily():
+    """MOck Forecast Daily object."""
+
+    def __init__(self):
+        """Init for mock."""
+        self.data = [MockOverseedingForecastData()]
+
+
+# pylint: disable=R0903
+class MockGrowingForecast():
     """Mock Forecast object."""
 
     @classmethod
     def daily(cls):
         """Return mock daily forecast."""
-        return MockForecastDaily()
+        return MockGrowingForecastDaily()
+
+
+# pylint: disable=R0903
+class MockOverseedingForecast():
+    """Mock Forecast object."""
+
+    @classmethod
+    def daily(cls):
+        """Return mock daily forecast."""
+        return MockOverseedingForecastDaily()
 
 
 # pylint: disable=R0903
@@ -108,9 +130,9 @@ def test_publish_growing_days_data():
             as mock_mqtt, patch(patch_get_historic, autospec=True) \
             as mock_get_historic:
         # Override the forecastio.load_forecast method
-        mock_forcast = MockForecast()
+        mock_forcast = MockGrowingForecast()
         mock_forecastio.load_forecast.return_value = mock_forcast
-        mock_daily = MockForecastDaily()
+        mock_daily = MockGrowingForecastDaily()
         mock_get_historic.return_value = mock_daily
 
         # Get call
@@ -121,15 +143,79 @@ def test_publish_growing_days_data():
         mock_mqtt.Client.assert_called_with()
 
         # Test Message
-        test_msg = berm_const.MSG_TEMPLATE.format(8, 7, 1)
+        test_msg = berm_const.MSG_GROWING_TEMPLATE.format(8, 7, 1)
         assert msg == test_msg
 
 
-def test_mqtt_connection_timeout():
+def test_ideal_overseeding_days():
+    """Test the ideal growing days."""
+    patch_forecast = 'bermuda.app.forecastio'
+    patch_get_historic = 'bermuda.app.get_historic'
+    with patch(patch_forecast) \
+            as mock_forecastio, patch(patch_get_historic, autospec=True) \
+            as mock_get_historic:
+        # Override the forecastio.load_forecast method
+        mock_forcast = MockOverseedingForecast()
+        mock_forecastio.load_forecast.return_value = mock_forcast
+        mock_daily = MockOverseedingForecastDaily()
+        mock_get_historic.return_value = mock_daily
+
+        # Get call
+        config = get_test_config()
+        days = get_ideal_overseeding_days(config)
+
+        assert days == 8
+
+        assert mock_get_historic.call_count == 7
+
+        mock_forecastio.load_forecast.assert_called_with(
+            config[berm_const.CONF_DARKSKY_API_KEY],
+            config[berm_const.CONF_HOME_LATITUDE],
+            config[berm_const.CONF_HOME_LONGITUDE]
+        )
+
+
+def test_publish_overseeding_days_data():
+    """Test the publish overseeding days with data."""
+    patch_forecast = 'bermuda.app.forecastio'
+    patch_mqtt = 'bermuda.app.mqtt'
+    patch_get_historic = 'bermuda.app.get_historic'
+    with patch(patch_forecast) \
+            as mock_forecastio, patch(patch_mqtt) \
+            as mock_mqtt, patch(patch_get_historic, autospec=True) \
+            as mock_get_historic:
+        # Override the forecastio.load_forecast method
+        mock_forcast = MockOverseedingForecast()
+        mock_forecastio.load_forecast.return_value = mock_forcast
+        mock_daily = MockOverseedingForecastDaily()
+        mock_get_historic.return_value = mock_daily
+
+        # Get call
+        config = get_test_config()
+        msg = publish_overseeding_days(config)
+
+        # Test mocks
+        mock_mqtt.Client.assert_called_with()
+
+        # Test Message
+        test_msg = berm_const.MSG_OVERSEED_TEMPLATE.format(8)
+        assert msg == test_msg
+
+
+def test_growing_days_mqtt_connection_timeout():
     """Test Response to mqtt timeout."""
     with pytest.raises(SystemExit) as ex:
         config = get_test_config()
         publish_growing_days(config)
+
+        assert ex.value_code == 1
+
+
+def test_overseed_mqtt_connection_timeout():
+    """Test Response to mqtt timeout."""
+    with pytest.raises(SystemExit) as ex:
+        config = get_test_config()
+        publish_overseeding_days(config)
 
         assert ex.value_code == 1
 
@@ -189,16 +275,19 @@ def test_main():
     patch_path = 'bermuda.app.ensure_config_path'
     patch_config = 'bermuda.app.get_config'
     patch_days = 'bermuda.app.publish_growing_days'
+    patch_overseed_days = 'bermuda.app.publish_overseeding_days'
 
     with patch(path_args) as mock_args, \
         patch(patch_path) as mock_path, \
         patch(patch_config) as mock_config, \
-            patch(patch_days) as mock_days:
+        patch(patch_days) as mock_days, \
+            patch(patch_overseed_days) as mock_overseed:
 
         mock_args.return_value = MockArgs()
         mock_path.return_value = 'testpath'
         mock_config.return_value = 'test_config'
         mock_days.return_value = 'testing'
+        mock_overseed.return_value = 'testing'
 
         resp = main()
 
@@ -206,5 +295,6 @@ def test_main():
         mock_path.assert_called_once_with('test_config')
         mock_config.assert_called_once_with('testpath')
         mock_days.assert_called_once_with('test_config')
+        mock_overseed.assert_called_once_with('test_config')
 
         assert resp == 0
