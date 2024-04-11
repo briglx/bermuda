@@ -1,7 +1,6 @@
 """The tests for the bermuda script."""
 import os
 from unittest.mock import patch
-from datetime import datetime, timedelta
 import pytest
 from bermuda.app import (
     publish_growing_days,
@@ -30,8 +29,7 @@ def test_publish_growing_days():
     """Test the publish growing days."""
     patch_forecast = 'bermuda.app.forecastio'
     patch_mqtt = 'bermuda.app.mqtt'
-    with patch(patch_forecast) \
-            as mock_forecastio, patch(patch_mqtt) \
+    with patch(patch_forecast), patch(patch_mqtt) \
             as mock_mqtt:
 
         # Get call
@@ -41,16 +39,16 @@ def test_publish_growing_days():
         # Test mocks
         mock_mqtt.Client.assert_called_with()
 
-        cur_time = datetime.utcnow()
-        cur_time = cur_time.replace(minute=0, second=0, microsecond=0)
-        last_week = cur_time - timedelta(days=7)
+        # Cache bypassed this call
+        # cur_time = datetime.utcnow()
+        # cur_time = cur_time.replace(minute=0, second=0, microsecond=0)
+        # last_week = cur_time - timedelta(days=7)
 
-        mock_forecastio.load_forecast.assert_called_with(
-            config[berm_const.CONF_DARKSKY_API_KEY],
-            config[berm_const.CONF_HOME_LATITUDE],
-            config[berm_const.CONF_HOME_LONGITUDE],
-            time=last_week
-        )
+        # mock_forecastio.load_forecast.assert_called_with(
+        #     config[berm_const.CONF_DARKSKY_API_KEY],
+        #     config[berm_const.CONF_HOME_LATITUDE],
+        #     config[berm_const.CONF_HOME_LONGITUDE]
+        # )
 
         # Test Message
         test_msg = berm_const.MSG_TEMPLATE.format(0, 0, 0)
@@ -104,13 +102,16 @@ def test_publish_growing_days_data():
     """Test the publish growing days with data."""
     patch_forecast = 'bermuda.app.forecastio'
     patch_mqtt = 'bermuda.app.mqtt'
+    patch_get_historic = 'bermuda.app.get_historic'
     with patch(patch_forecast) \
             as mock_forecastio, patch(patch_mqtt) \
-            as mock_mqtt:
-
+            as mock_mqtt, patch(patch_get_historic, autospec=True) \
+            as mock_get_historic:
         # Override the forecastio.load_forecast method
         mock_forcast = MockForecast()
         mock_forecastio.load_forecast.return_value = mock_forcast
+        mock_daily = MockForecastDaily()
+        mock_get_historic.return_value = mock_daily
 
         # Get call
         config = get_test_config()
@@ -119,19 +120,8 @@ def test_publish_growing_days_data():
         # Test mocks
         mock_mqtt.Client.assert_called_with()
 
-        cur_time = datetime.utcnow()
-        cur_time = cur_time.replace(minute=0, second=0, microsecond=0)
-        last_week = cur_time - timedelta(days=7)
-
-        mock_forecastio.load_forecast.assert_called_with(
-            config[berm_const.CONF_DARKSKY_API_KEY],
-            config[berm_const.CONF_HOME_LATITUDE],
-            config[berm_const.CONF_HOME_LONGITUDE],
-            time=last_week
-        )
-
         # Test Message
-        test_msg = berm_const.MSG_TEMPLATE.format(2, 1, 1)
+        test_msg = berm_const.MSG_TEMPLATE.format(8, 7, 1)
         assert msg == test_msg
 
 

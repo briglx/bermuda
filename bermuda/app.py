@@ -5,6 +5,7 @@ import argparse
 from datetime import datetime, timedelta
 import sys
 import os
+import functools
 import forecastio
 import paho.mqtt.client as mqtt
 import yaml
@@ -52,32 +53,57 @@ def get_config(config_file):
     return cfg
 
 
+@functools.lru_cache(maxsize=14)
+def get_historic(dark_sky_api_key,
+                 home_latitude,
+                 home_longitude,
+                 time):
+    """Get historic weather with cache."""
+    forecast = forecastio.load_forecast(
+        dark_sky_api_key,
+        home_latitude,
+        home_longitude,
+        time
+        )
+
+    daily = forecast.daily()
+
+    return daily
+
+
 def get_days(conf, historic=False):
     """Get number of day."""
     cur_time = datetime.utcnow()
-    cur_time = cur_time.replace(minute=0, second=0, microsecond=0)
+    cur_time = cur_time.replace(hour=0, minute=0, second=0, microsecond=0)
     last_week = cur_time - timedelta(days=7)
+    days_over_low = 0
 
     if historic:
-        forecast = forecastio.load_forecast(
-            conf[berm_const.CONF_DARKSKY_API_KEY],
-            conf[berm_const.CONF_HOME_LATITUDE],
-            conf[berm_const.CONF_HOME_LONGITUDE],
-            time=last_week
-            )
+        # Have to call for each day
+        for i in range(7):
+            prev_day = last_week + timedelta(days=i)
+            daily = get_historic(
+                conf[berm_const.CONF_DARKSKY_API_KEY],
+                conf[berm_const.CONF_HOME_LATITUDE],
+                conf[berm_const.CONF_HOME_LONGITUDE],
+                time=prev_day
+                )
+
+            for data in daily.data:
+                if data.apparentTemperatureLow > berm_const.LOW_TEMP:
+                    days_over_low += 1
+
     else:
         forecast = forecastio.load_forecast(
             conf[berm_const.CONF_DARKSKY_API_KEY],
             conf[berm_const.CONF_HOME_LATITUDE],
             conf[berm_const.CONF_HOME_LONGITUDE]
             )
+        daily = forecast.daily()
 
-    daily = forecast.daily()
-
-    days_over_low = 0
-    for data in daily.data:
-        if data.apparentTemperatureLow > berm_const.LOW_TEMP:
-            days_over_low += 1
+        for data in daily.data:
+            if data.apparentTemperatureLow > berm_const.LOW_TEMP:
+                days_over_low += 1
 
     return days_over_low
 
