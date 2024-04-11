@@ -39,6 +39,18 @@ Create path and environment::
     source /etc/bermuda/env/bin/activate
     python3 -m pip install -r requirements.txt
 
+Create config file call config.yaml and add the following settings::
+
+    home_latitude: your_home_latitude
+    home_longitude: your_home_longitude
+    dark_sky_api_key: your_dark_sky_api_key
+    mqtt_broker_address: your_mqtt_broker_address
+    mqtt_broker_username: your_mqtt_broker_username
+    mqtt_broker_password: your_mqtt_broker_password
+    mqtt_broker_port: your_mqtt_broker_port
+
+
+
 .. _DarkSky: https://darksky.net/dev/docs
 
 Use
@@ -46,4 +58,5 @@ Use
 
 .. code-block:: python
 
+    $ sudo -u bermuda -H -s
     $ source /etc/bermuda/bermuda/bin/activate && python3 /etc/bermuda/bermuda.py
