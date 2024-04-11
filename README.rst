@@ -54,39 +54,30 @@ Config Settings:
 
 Run Bermuda manually::
 
-    $ berm 
+    $ berm --config /path/to/config/dir/
 
-Create a system user
-====================
+Create Cron Job
+===============
+
+Create a bash script called bermuda.sh to run bermuda::
+
+    #!/bin/bash
+    /path/to/bermuda/env/bin/python3 /path/to/bermuda/app.py --config /path/to/bermuda/config
+
+Edit the file be executible::
+
+    $ chmod +x bermuda.sh
+
+Configure Cron Job to run everyday at 2am::
+
+    $ sudo crontab -e
+
+    0 2 * * * /path/to/bermuda.sh
+
+Optional Create a system user
+=============================
 
 Create System user and group::
 
     useradd  --system  bermuda
     sudo usermod -a -G bermuda bermuda
-
-
-Autostart with Systemd
-======================
-
-Create a file is /etc/systemd/system/bermuda@YOUR_USER.service with YOUR_USER replaced by the user account that Bermuda will run as (normally bermuda).
-The following template should work::
-
-    [Unit]
-    Description=Bermuda
-    After=network-online.target
-
-    [Service]
-    Type=simple
-    User=%i
-    ExecStart=/srv/bermuda/bin/berm
-
-    [Install]
-    WantedBy=multi-user.target
-
-Use
-==========
-
-.. code-block:: bash
-
-    $ sudo -u bermuda -H -s
-    $ source /etc/bermuda/bermuda/bin/activate && python3 /etc/bermuda/bermuda.py
