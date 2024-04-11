@@ -1,6 +1,9 @@
 **********************************
 Bermuda Growing Days
 **********************************
+.. image:: https://travis-ci.org/briglx/bermuda.svg?branch=master
+    :target: https://travis-ci.org/briglx/bermuda
+
 The ``bermuda`` script is a support application that will fetch the number of days that are warm enough for bermuda to grow. 
 
 - Development: https://github.com/briglx/bermuda
