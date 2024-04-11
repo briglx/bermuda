@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Bermuda Growing Day script."""
 
-import forecastio
 from datetime import datetime, timedelta
+import forecastio
 import paho.mqtt.client as mqtt
 import yaml
 import bermuda.const as berm_const
 
 
 def get_config():
+    """Get configuration."""
     with open(berm_const.CONFIG_PATH, 'r') as ymlfile:
         cfg = yaml.load(ymlfile, Loader=yaml.SafeLoader)
     return cfg
@@ -37,8 +38,8 @@ def get_days(conf, historic=False):
     daily = forecast.daily()
 
     days_over_low = 0
-    for d in daily.data:
-        if d.apparentTemperatureLow > berm_const.LOW_TEMP:
+    for data in daily.data:
+        if data.apparentTemperatureLow > berm_const.LOW_TEMP:
             days_over_low += 1
 
     return days_over_low
@@ -74,7 +75,5 @@ def publish_growing_days(conf):
 
 
 if __name__ == "__main__":
-    """ This is executed when run from the command line """
     print("starting bermuda")
-    config = get_config()
-    publish_growing_days(config)
+    publish_growing_days(get_config())
