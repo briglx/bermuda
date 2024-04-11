@@ -13,8 +13,7 @@ import os
 def ensure_config_path():
     """Check if config file exists"""
     if not os.path.isfile(berm_const.CONFIG_PATH):
-        print(('Fatal Error: Specified configuration files does '
-                'not exist {} ').format(berm_const.CONFIG_PATH))
+        print((berm_const.ERR_CONFIG).format(berm_const.CONFIG_PATH))
         sys.exit(1)
 
 
@@ -57,31 +56,38 @@ def get_days(conf, historic=False):
 
 def publish_growing_days(conf):
     """Publish the number of growing days to the mqtt broker."""
-    # Connect to Mqqt broker
-    mqtt_client = mqtt.Client()
-    mqtt_client.username_pw_set(
-        conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
-        conf[berm_const.CONF_MQTT_BROKER_PASSWORD]
-        )
-    mqtt_client.connect(
-        conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
-        conf[berm_const.CONF_MQTT_BROKER_PORT]
-        )
+    try:
+        # Connect to Mqqt broker
+        mqtt_client = mqtt.Client()
+        mqtt_client.username_pw_set(
+            conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
+            conf[berm_const.CONF_MQTT_BROKER_PASSWORD]
+            )
+        mqtt_client.connect(
+            conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
+            conf[berm_const.CONF_MQTT_BROKER_PORT]
+            )
 
-    # Get Forecast Count
-    forecast_days_over_low = get_days(conf)
+        # Get Forecast Count
+        forecast_days_over_low = get_days(conf)
 
-    # Get historic count
-    historic_days_over_low = get_days(conf, True)
+        # Get historic count
+        historic_days_over_low = get_days(conf, True)
 
-    msg = berm_const.MSG_TEMPLATE.format(
-        historic_days_over_low + forecast_days_over_low,
-        historic_days_over_low,
-        forecast_days_over_low
-        )
-    mqtt_client.publish(berm_const.MQTT_TOPIC, msg)
+        msg = berm_const.MSG_TEMPLATE.format(
+            historic_days_over_low + forecast_days_over_low,
+            historic_days_over_low,
+            forecast_days_over_low
+            )
+        mqtt_client.publish(berm_const.MQTT_TOPIC, msg)
 
-    return msg
+        return msg
+
+    except TimeoutError:
+        print((berm_const.ERR_TIMEOUT).format(
+            berm_const.CONF_MQTT_BROKER_ADDRESS)
+            )
+        sys.exit(1)
 
 
 def main():

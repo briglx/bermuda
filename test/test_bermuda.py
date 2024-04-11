@@ -1,6 +1,7 @@
 """The tests for the bermuda script."""
 from unittest.mock import patch
 from datetime import datetime, timedelta
+import pytest
 from bermuda.app import publish_growing_days
 from bermuda import const as berm_const
 
@@ -47,3 +48,12 @@ def test_publish_growing_days():
         # Test Message
         test_msg = berm_const.MSG_TEMPLATE.format(0, 0, 0)
         assert(msg == test_msg)
+
+
+def test_mqtt_connection_timeout():
+    """Test Response to mqtt timeout."""
+    with pytest.raises(SystemExit) as ex:
+        config = get_test_config()
+        publish_growing_days(config)
+
+        assert(ex.value_code == 1)
