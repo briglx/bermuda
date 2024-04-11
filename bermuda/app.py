@@ -3,29 +3,28 @@
 
 import argparse
 from datetime import datetime, timedelta
-import sys
-import os
 import functools
+import os
+import sys
+
 import forecastio
 import paho.mqtt.client as mqtt
 import yaml
+
 from bermuda import const as berm_const
 
 
 def get_arguments(args):
     """Get parsed passed in arguments."""
-    parser = argparse.ArgumentParser(
-        description="Bermuda: Forecast, Alert.")
+    parser = argparse.ArgumentParser(description="Bermuda: Forecast, Alert.")
+    parser.add_argument("--version", action="version", version=berm_const.__version__)
     parser.add_argument(
-        '--version',
-        action='version',
-        version=berm_const.__version__
+        "-c",
+        "--config",
+        metavar="path_to_config_dir",
+        default="",
+        help="Directory that contains the Bermuda configuration",
     )
-    parser.add_argument(
-        '-c', '--config',
-        metavar='path_to_config_dir',
-        default='',
-        help="Directory that contains the Bermuda configuration")
 
     arguments = parser.parse_args(args)
 
@@ -48,23 +47,17 @@ def ensure_config_path(config_dir, conf_name=berm_const.CONFIG_PATH):
 
 def get_config(config_file):
     """Get configuration."""
-    with open(config_file, 'r') as ymlfile:
+    with open(config_file, "r") as ymlfile:
         cfg = yaml.load(ymlfile, Loader=yaml.SafeLoader)
     return cfg
 
 
 @functools.lru_cache(maxsize=14)
-def get_historic(dark_sky_api_key,
-                 home_latitude,
-                 home_longitude,
-                 time):
+def get_historic(dark_sky_api_key, home_latitude, home_longitude, time):
     """Get historic weather with cache."""
     forecast = forecastio.load_forecast(
-        dark_sky_api_key,
-        home_latitude,
-        home_longitude,
-        time
-        )
+        dark_sky_api_key, home_latitude, home_longitude, time
+    )
 
     daily = forecast.daily()
 
@@ -86,16 +79,16 @@ def get_weather(conf):
             conf[berm_const.CONF_DARKSKY_API_KEY],
             conf[berm_const.CONF_HOME_LATITUDE],
             conf[berm_const.CONF_HOME_LONGITUDE],
-            time=prev_day
-            )
+            time=prev_day,
+        )
         historic_data.extend(daily.data)
 
     # Get Forecast
     forecast = forecastio.load_forecast(
         conf[berm_const.CONF_DARKSKY_API_KEY],
         conf[berm_const.CONF_HOME_LATITUDE],
-        conf[berm_const.CONF_HOME_LONGITUDE]
-        )
+        conf[berm_const.CONF_HOME_LONGITUDE],
+    )
     daily = forecast.daily()
 
     return (historic_data, daily.data)
@@ -103,15 +96,13 @@ def get_weather(conf):
 
 def is_in_range(data):
     """Check if data is in range."""
-    return (data.apparentTemperatureHigh >
-            berm_const.OVERSEED_DAYTIME_LOW and
-            data.apparentTemperatureHigh <
-            berm_const.OVERSEED_DAYTIME_HIGH
-            ) and (
-                data.apparentTemperatureLow >
-                berm_const.OVERSEED_NIGHTIME_LOW and
-                data.apparentTemperatureLow <
-                berm_const.OVERSEED_NIGHTIME_HIGH)
+    return (
+        data.apparentTemperatureHigh > berm_const.OVERSEED_DAYTIME_LOW
+        and data.apparentTemperatureHigh < berm_const.OVERSEED_DAYTIME_HIGH
+    ) and (
+        data.apparentTemperatureLow > berm_const.OVERSEED_NIGHTIME_LOW
+        and data.apparentTemperatureLow < berm_const.OVERSEED_NIGHTIME_HIGH
+    )
 
 
 def get_ideal_overseeding_days(conf):
@@ -154,12 +145,12 @@ def publish_growing_days(conf):
         mqtt_client = mqtt.Client()
         mqtt_client.username_pw_set(
             conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
-            conf[berm_const.CONF_MQTT_BROKER_PASSWORD]
-            )
+            conf[berm_const.CONF_MQTT_BROKER_PASSWORD],
+        )
         mqtt_client.connect(
             conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
-            conf[berm_const.CONF_MQTT_BROKER_PORT]
-            )
+            conf[berm_const.CONF_MQTT_BROKER_PORT],
+        )
 
         # Get Forecast Count
         forecast_days_over_low = get_days(conf)
@@ -170,17 +161,14 @@ def publish_growing_days(conf):
         msg = berm_const.MSG_GROWING_TEMPLATE.format(
             historic_days_over_low + forecast_days_over_low,
             historic_days_over_low,
-            forecast_days_over_low
-            )
+            forecast_days_over_low,
+        )
         mqtt_client.publish(berm_const.MQTT_GROWING_TOPIC, msg)
 
         return msg
 
     except TimeoutError:
-        print(
-            (berm_const.ERR_TIMEOUT).format(
-                berm_const.CONF_MQTT_BROKER_ADDRESS)
-            )
+        print((berm_const.ERR_TIMEOUT).format(berm_const.CONF_MQTT_BROKER_ADDRESS))
         sys.exit(1)
 
 
@@ -191,28 +179,23 @@ def publish_overseeding_days(conf):
         mqtt_client = mqtt.Client()
         mqtt_client.username_pw_set(
             conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
-            conf[berm_const.CONF_MQTT_BROKER_PASSWORD]
-            )
+            conf[berm_const.CONF_MQTT_BROKER_PASSWORD],
+        )
         mqtt_client.connect(
             conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
-            conf[berm_const.CONF_MQTT_BROKER_PORT]
-            )
+            conf[berm_const.CONF_MQTT_BROKER_PORT],
+        )
 
         # Get Day Count
         ideal_overseeding_days = get_ideal_overseeding_days(conf)
 
-        msg = berm_const.MSG_OVERSEED_TEMPLATE.format(
-            ideal_overseeding_days
-            )
+        msg = berm_const.MSG_OVERSEED_TEMPLATE.format(ideal_overseeding_days)
         mqtt_client.publish(berm_const.MQTT_OVERSEED_TOPIC, msg)
 
         return msg
 
     except TimeoutError:
-        print(
-            (berm_const.ERR_TIMEOUT).format(
-                berm_const.CONF_MQTT_BROKER_ADDRESS)
-            )
+        print((berm_const.ERR_TIMEOUT).format(berm_const.CONF_MQTT_BROKER_ADDRESS))
         sys.exit(1)
 
 

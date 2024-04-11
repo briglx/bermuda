@@ -5,7 +5,7 @@ Bermuda Growing Days
     :target: https://coveralls.io/github/briglx/bermuda?branch=master
     :alt: Code Coverage Status
 
-The ``bermuda`` script is a support application that will fetch the number of days that are warm enough for bermuda to grow. 
+The ``bermuda`` script is a support application that will fetch the number of days that are warm enough for bermuda to grow.
 
 - Development: https://github.com/briglx/bermuda
 
@@ -18,7 +18,7 @@ It then publishes a message to a MQTT broker in the format:
 .. code-block:: javascript
 
     {
-        "totalDaysAbove60Deg": 11, 
+        "totalDaysAbove60Deg": 11,
         "historicDaysAbove60Deg":4,
         "forcastDaysAbove60Deg":7
     }
@@ -66,7 +66,7 @@ Create a bash script called bermuda.sh to run bermuda::
     #!/bin/bash
     /path/to/bermuda/env/bin/python3 /path/to/bermuda/app.py --config /path/to/bermuda/config
 
-Edit the file be executible::
+Edit the file be executable::
 
     $ chmod +x bermuda.sh
 
