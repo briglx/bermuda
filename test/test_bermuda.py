@@ -2,7 +2,7 @@
 from unittest.mock import patch
 from datetime import datetime, timedelta
 from bermuda.app import publish_growing_days
-import bermuda.const as berm_const
+from bermuda import const as berm_const
 
 
 def get_test_config():

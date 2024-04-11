@@ -33,7 +33,8 @@ Installing
 Get Code::
 
     $ git clone https://github.com/briglx/bermuda.git
-    $ python3 -m venv bermuda
+    $ cd bermuda/
+    $ python3 -m venv env
     $ cd bermuda/
     $ source bin/activate
     $ python3 -m pip install .

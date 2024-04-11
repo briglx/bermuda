@@ -3,7 +3,7 @@
 import os
 from datetime import datetime as dt
 from setuptools import setup, find_packages
-import bermuda.const as berm_const
+from bermuda import const as berm_const
 
 
 def read(fname):
@@ -22,6 +22,7 @@ PROJECT_PACKAGE_NAME = 'bermuda'
 PROJECT_LICENSE = 'Apache License 2.0'
 PROJECT_AUTHOR = 'The Bermuda Authors'
 PROJECT_COPYRIGHT = ' 2019-{}, {}'.format(dt.now().year, PROJECT_AUTHOR)
+PROJECT_URL = 'https://github.com/briglx/bermuda'
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
 
@@ -36,6 +37,7 @@ MIN_PY_VERSION = '.'.join(map(str, berm_const.REQUIRED_PYTHON_VER))
 setup(
     name=PROJECT_PACKAGE_NAME,
     version=berm_const.__version__,
+    url=PROJECT_URL,
     author=PROJECT_AUTHOR,
     packages=PACKAGES,
     include_package_data=True,

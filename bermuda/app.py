@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 import forecastio
 import paho.mqtt.client as mqtt
 import yaml
-import bermuda.const as berm_const
+from bermuda import const as berm_const
+import sys
 
 
 def get_config():
