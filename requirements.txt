@@ -1,0 +1,12 @@
+python-forecastio>=1.4.0
+paho-mqtt>=1.4.0
+PyYAML>=5.1
+
+# Dev Requirements
+sphinx_rtd_theme
+numpydoc
+pytest>=3.0.7
+pytest-cov
+tox>=2.7.0
+flake8
+pydocstyle
