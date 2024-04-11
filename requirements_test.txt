@@ -1,8 +1,0 @@
-# Dev Requirements
-coveralls
-flake8
-numpydoc
-pydocstyle
-pylint
-pytest
-pytest-cov
