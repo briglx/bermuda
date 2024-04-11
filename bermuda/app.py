@@ -172,7 +172,7 @@ def publish_growing_days(conf):
             historic_days_over_low,
             forecast_days_over_low
             )
-        mqtt_client.publish(berm_const.MQTT_TOPIC, msg)
+        mqtt_client.publish(berm_const.MQTT_GROWING_TOPIC, msg)
 
         return msg
 
@@ -204,7 +204,7 @@ def publish_overseeding_days(conf):
         msg = berm_const.MSG_OVERSEED_TEMPLATE.format(
             ideal_overseeding_days
             )
-        mqtt_client.publish(berm_const.MQTT_TOPIC, msg)
+        mqtt_client.publish(berm_const.MQTT_OVERSEED_TOPIC, msg)
 
         return msg
 

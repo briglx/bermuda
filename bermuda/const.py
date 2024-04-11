@@ -27,8 +27,8 @@ OVERSEED_DAYTIME_LOW = 79
 OVERSEED_NIGHTIME_HIGH = 57
 OVERSEED_NIGHTIME_LOW = 52
 
-MQTT_TOPIC = "monitor/blueleft/forecast/bermuda/growing"
-MQTT_TOPIC = "monitor/blueleft/forecast/bermuda/overseed"
+MQTT_GROWING_TOPIC = "monitor/blueleft/forecast/bermuda/growing"
+MQTT_OVERSEED_TOPIC = "monitor/blueleft/forecast/bermuda/overseed"
 
 MSG_GROWING_TEMPLATE = "{{" + \
     "\"totalDaysAbove60Deg\":{}," + \
