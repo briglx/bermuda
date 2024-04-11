@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Bermuda Growing Day script."""
 
+import argparse
 from datetime import datetime, timedelta
 import forecastio
 import paho.mqtt.client as mqtt
@@ -10,16 +11,43 @@ import sys
 import os
 
 
-def ensure_config_path():
-    """Check if config file exists"""
-    if not os.path.isfile(berm_const.CONFIG_PATH):
-        print((berm_const.ERR_CONFIG).format(berm_const.CONFIG_PATH))
+def get_arguments(args):
+    """Get parsed passed in arguments."""
+    parser = argparse.ArgumentParser(
+        description="Bermuda: Forecast, Alert.")
+    parser.add_argument(
+        '--version',
+        action='version',
+        version=berm_const.__version__
+    )
+    parser.add_argument(
+        '-c', '--config',
+        metavar='path_to_config_dir',
+        default='',
+        help="Directory that contains the Bermuda configuration")
+
+    arguments = parser.parse_args(args)
+
+    return arguments
+
+
+def ensure_config_path(config_dir, conf_name=berm_const.CONFIG_PATH):
+    """Check if config file exists."""
+    if not os.path.isdir(config_dir):
+        print((berm_const.ERR_CONFIG).format(config_dir))
         sys.exit(1)
 
+    config_file = os.path.join(config_dir, conf_name)
+    if not os.path.isfile(config_file):
+        print((berm_const.ERR_CONFIG).format(config_file))
+        sys.exit(1)
 
-def get_config():
+    return config_file
+
+
+def get_config(config_file):
     """Get configuration."""
-    with open(berm_const.CONFIG_PATH, 'r') as ymlfile:
+    with open(config_file, 'r') as ymlfile:
         cfg = yaml.load(ymlfile, Loader=yaml.SafeLoader)
     return cfg
 
@@ -93,8 +121,11 @@ def publish_growing_days(conf):
 def main():
     """Start Bermuda script."""
     print("Starting bermuda")
-    ensure_config_path()
-    config = get_config()
+    args = get_arguments(sys.argv[1:])
+
+    config_dir = args.config
+    config_file = ensure_config_path(config_dir)
+    config = get_config(config_file)
     msg = publish_growing_days(config)
     print(msg)
 
