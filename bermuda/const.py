@@ -22,10 +22,19 @@ ERR_TIMEOUT = "Fatal Error: Connection timeout for MQTT server {}."
 ERR_CONFIG = "Fatal Error: Specified configuration files does not exist {}."
 
 LOW_TEMP = 60
+OVERSEED_DAYTIME_HIGH = 86
+OVERSEED_DAYTIME_LOW = 79
+OVERSEED_NIGHTIME_HIGH = 57
+OVERSEED_NIGHTIME_LOW = 52
 
 MQTT_TOPIC = "monitor/blueleft/forecast/bermuda/growing"
-MSG_TEMPLATE = "{{" + \
+MQTT_TOPIC = "monitor/blueleft/forecast/bermuda/overseed"
+
+MSG_GROWING_TEMPLATE = "{{" + \
     "\"totalDaysAbove60Deg\":{}," + \
     "\"historicDaysAbove60Deg\":{}," + \
     "\"forcastDaysAbove60Deg\":{}" + \
+    "}}"
+MSG_OVERSEED_TEMPLATE = "{{" + \
+    "\"totalDaysIdealOverseeding\":{}" + \
     "}}"
