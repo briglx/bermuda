@@ -74,5 +74,15 @@ def publish_growing_days(conf):
     return msg
 
 
+def main():
+    """Start Bermuda script."""
+    print("Starting bermuda")
+    config = get_config()
+    msg = publish_growing_days(config)
+    print(msg)
+
+    return 0
+
+
 if __name__ == "__main__":
-    publish_growing_days(get_config())
+    sys.exit(main())
