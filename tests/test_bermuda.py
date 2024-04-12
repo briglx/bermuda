@@ -3,6 +3,7 @@
 import os
 from unittest.mock import patch
 
+import paho.mqtt.client as mqtt
 import pytest
 
 from bermuda import const as berm_const
@@ -33,15 +34,27 @@ def get_test_config():
 def test_publish_growing_days():
     """Test the publish growing days."""
     patch_forecast = "bermuda.app.forecastio"
-    patch_mqtt = "bermuda.app.mqtt"
-    with patch(patch_forecast), patch(patch_mqtt) as mock_mqtt:
+    patch_mqtt_client = "bermuda.app.mqtt.Client"
+    with patch(patch_forecast), patch(patch_mqtt_client) as mock_mqtt_client:
 
         # Get call
-        config = get_test_config()
-        msg = publish_growing_days(config)
+        conf = get_test_config()
+        msg = publish_growing_days(conf)
 
         # Test mocks
-        mock_mqtt.Client.assert_called_with()
+        mock_mqtt_client.assert_called_once_with(mqtt.CallbackAPIVersion.VERSION2)
+        mock_instance = mock_mqtt_client.return_value
+        mock_instance.username_pw_set.assert_called_once_with(
+            conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
+            conf[berm_const.CONF_MQTT_BROKER_PASSWORD],
+        )
+        mock_instance.connect.assert_called_once_with(
+            conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
+            conf[berm_const.CONF_MQTT_BROKER_PORT],
+        )
+        mock_instance.publish.assert_called_once_with(
+            berm_const.MQTT_GROWING_TOPIC, msg
+        )
 
         # Test Message
         test_msg = berm_const.MSG_GROWING_TEMPLATE.format(0, 0, 0)
@@ -125,11 +138,11 @@ class MockArgs:
 def test_publish_growing_days_data():
     """Test the publish growing days with data."""
     patch_forecast = "bermuda.app.forecastio"
-    patch_mqtt = "bermuda.app.mqtt"
+    patch_mqtt_client = "bermuda.app.mqtt.Client"
     patch_get_historic = "bermuda.app.get_historic"
     with (
         patch(patch_forecast) as mock_forecastio,
-        patch(patch_mqtt) as mock_mqtt,
+        patch(patch_mqtt_client) as mock_mqtt_client,
         patch(patch_get_historic, autospec=True) as mock_get_historic,
     ):
         # Override the forecastio.load_forecast method
@@ -139,11 +152,23 @@ def test_publish_growing_days_data():
         mock_get_historic.return_value = mock_daily
 
         # Get call
-        config = get_test_config()
-        msg = publish_growing_days(config)
+        conf = get_test_config()
+        msg = publish_growing_days(conf)
 
-        # Test mocks
-        mock_mqtt.Client.assert_called_with()
+        # Test mqtt Client
+        mock_mqtt_client.assert_called_once_with(mqtt.CallbackAPIVersion.VERSION2)
+        mock_instance = mock_mqtt_client.return_value
+        mock_instance.username_pw_set.assert_called_once_with(
+            conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
+            conf[berm_const.CONF_MQTT_BROKER_PASSWORD],
+        )
+        mock_instance.connect.assert_called_once_with(
+            conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
+            conf[berm_const.CONF_MQTT_BROKER_PORT],
+        )
+        mock_instance.publish.assert_called_once_with(
+            berm_const.MQTT_GROWING_TOPIC, msg
+        )
 
         # Test Message
         test_msg = berm_const.MSG_GROWING_TEMPLATE.format(8, 7, 1)
@@ -182,11 +207,11 @@ def test_ideal_overseeding_days():
 def test_publish_overseeding_days_data():
     """Test the publish overseeding days with data."""
     patch_forecast = "bermuda.app.forecastio"
-    patch_mqtt = "bermuda.app.mqtt"
+    patch_mqtt_client = "bermuda.app.mqtt.Client"
     patch_get_historic = "bermuda.app.get_historic"
     with (
         patch(patch_forecast) as mock_forecastio,
-        patch(patch_mqtt) as mock_mqtt,
+        patch(patch_mqtt_client) as mock_mqtt_client,
         patch(patch_get_historic, autospec=True) as mock_get_historic,
     ):
         # Override the forecastio.load_forecast method
@@ -196,11 +221,23 @@ def test_publish_overseeding_days_data():
         mock_get_historic.return_value = mock_daily
 
         # Get call
-        config = get_test_config()
-        msg = publish_overseeding_days(config)
+        conf = get_test_config()
+        msg = publish_overseeding_days(conf)
 
-        # Test mocks
-        mock_mqtt.Client.assert_called_with()
+        # Test mqtt Client
+        mock_mqtt_client.assert_called_once_with(mqtt.CallbackAPIVersion.VERSION2)
+        mock_instance = mock_mqtt_client.return_value
+        mock_instance.username_pw_set.assert_called_once_with(
+            conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
+            conf[berm_const.CONF_MQTT_BROKER_PASSWORD],
+        )
+        mock_instance.connect.assert_called_once_with(
+            conf[berm_const.CONF_MQTT_BROKER_ADDRESS],
+            conf[berm_const.CONF_MQTT_BROKER_PORT],
+        )
+        mock_instance.publish.assert_called_once_with(
+            berm_const.MQTT_OVERSEED_TOPIC, msg
+        )
 
         # Test Message
         test_msg = berm_const.MSG_OVERSEED_TEMPLATE.format(8)

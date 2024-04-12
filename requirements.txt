@@ -1,4 +1,4 @@
-python-forecastio>=1.4.0
-paho-mqtt>=1.4.0
-PyYAML>=5.1
+paho-mqtt==2.0.0
 python-dotenv==1.0.0
+python-forecastio==1.4.0
+PyYAML==6.0.1

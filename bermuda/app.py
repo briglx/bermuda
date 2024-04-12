@@ -2,7 +2,7 @@
 """Bermuda Growing Day script."""
 
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import functools
 import os
 import sys
@@ -66,7 +66,7 @@ def get_historic(dark_sky_api_key, home_latitude, home_longitude, time):
 
 def get_weather(conf):
     """Get historic and forecast weather data."""
-    cur_time = datetime.utcnow()
+    cur_time = datetime.now(timezone.utc)
     cur_time = cur_time.replace(hour=0, minute=0, second=0, microsecond=0)
     last_week = cur_time - timedelta(days=7)
 
@@ -142,7 +142,7 @@ def publish_growing_days(conf):
     """Publish the number of growing days to the mqtt broker."""
     try:
         # Connect to Mqqt broker
-        mqtt_client = mqtt.Client()
+        mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         mqtt_client.username_pw_set(
             conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
             conf[berm_const.CONF_MQTT_BROKER_PASSWORD],
@@ -176,7 +176,7 @@ def publish_overseeding_days(conf):
     """Publish the number of overseeding days to the mqtt broker."""
     try:
         # Connect to Mqqt broker
-        mqtt_client = mqtt.Client()
+        mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         mqtt_client.username_pw_set(
             conf[berm_const.CONF_MQTT_BROCKER_USERNAME],
             conf[berm_const.CONF_MQTT_BROKER_PASSWORD],

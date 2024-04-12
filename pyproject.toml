@@ -3,24 +3,22 @@ requires = ["setuptools==68.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name        = "bermuda"
-version     = "0.0.2"
-license     = {text = "MIT"}
+name = "bermuda"
+version = "0.0.2"
+license = { text = "MIT" }
 description = "Publish the number of days that are warm enough for bermuda to grow"
-readme      = "README.rst"
-authors     = [
-    {name = "Lamoreaux Lab", email = "info@golamoreaux.com"}
-]
+readme = "README.rst"
+authors = [{ name = "Lamoreaux Lab", email = "info@golamoreaux.com" }]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 requires-python = ">=3.12.0"
-dependencies    = []
+dependencies = []
 
 [project.urls]
-"Homepage"    = "https://github.com/briglx/bermuda"
+"Homepage" = "https://github.com/briglx/bermuda"
 "Source Code" = "https://github.com/briglx/bermuda.git"
 "Bug Reports" = "https://github.com/briglx/bermuda/issues"
 
@@ -29,7 +27,7 @@ berm = "bermuda.app:main"
 
 [tool.setuptools]
 platforms = ["any"]
-zip-safe  = false
+zip-safe = false
 include-package-data = true
 
 [tool.setuptools.packages.find]
@@ -38,7 +36,21 @@ include = ["bermuda*"]
 [tool.bandit]
 exclude = [".venv/*.*"]
 exclude_dirs = [".venv"]
-tests = ["B108", "B306", "B307", "B313", "B314", "B315", "B316", "B317", "B318", "B319", "B320", "B602", "B604"]
+tests = [
+    "B108",
+    "B306",
+    "B307",
+    "B313",
+    "B314",
+    "B315",
+    "B316",
+    "B317",
+    "B318",
+    "B319",
+    "B320",
+    "B602",
+    "B604",
+]
 [tool.bandit.assert_used]
 skips = ['*_test.py', '*/test_*.py']
 
@@ -55,22 +67,24 @@ combine_as_imports = true
 
 # Used with flake8
 [tool.pydocstyle]
-match-dir='[^node_module].*'
+match-dir = '[^node_module].*'
 
 [tool.pylint.MAIN]
 py-version = "3.12"
 jobs = 2
-load-plugins = [
-    "pylint.extensions.code_style",
-    "pylint.extensions.typing"
-]
+load-plugins = ["pylint.extensions.code_style", "pylint.extensions.typing"]
 persistent = false
-fail-on = [
-    "I",
-]
+fail-on = ["I"]
 
 [tool.pylint.FORMAT]
 expected-line-ending-format = "LF"
 
 [tool.rstcheck]
 report_level = "INFO"
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain if non-runnable code isn't run:
+    "if __name__ == .__main__.:",
+]
